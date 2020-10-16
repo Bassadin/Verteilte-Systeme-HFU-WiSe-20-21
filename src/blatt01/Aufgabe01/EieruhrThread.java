@@ -1,4 +1,4 @@
-package Blatt1.Aufgabe01;
+package blatt01.Aufgabe01;
 
 public class EieruhrThread extends Thread {
 	String message;

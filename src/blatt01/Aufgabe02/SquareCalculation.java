@@ -1,4 +1,4 @@
-package Blatt1.Aufgabe02;
+package blatt01.Aufgabe02;
 
 public class SquareCalculation implements F {
 
