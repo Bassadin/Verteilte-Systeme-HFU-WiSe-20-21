@@ -20,11 +20,23 @@ public class HTTPSClient {
 		System.out.println(urlExists("https://www.bundestag.de/presse"));
 	}
 
+	public static Socket getSocketForUrl(URL url) {
+		SocketFactory factory = SSLSocketFactory.getDefault();
+		try (Socket socket = factory.createSocket(url.getHost(), HTTPSClient.portNumber)) {
+			return socket;
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public static void get(String url) {
 		try {
 			URL targetUrl = new URL(url);
-			SocketFactory factory = SSLSocketFactory.getDefault();
-			try (Socket socket = factory.createSocket(targetUrl.getHost(), HTTPSClient.portNumber)) {
+			try {
+				Socket socket = getSocketForUrl(targetUrl);
 				BufferedWriter printWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -44,22 +56,22 @@ public class HTTPSClient {
 					nextLine = bufferedReader.readLine();
 				}
 				socket.close();
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
+
 	}
 
 	public static boolean urlExists(String url) {
 		try {
 			URL targetUrl = new URL(url);
-			SocketFactory factory = SSLSocketFactory.getDefault();
-			try (Socket socket = factory.createSocket(targetUrl.getHost(), HTTPSClient.portNumber)) {
-
+			try {
+				Socket socket = getSocketForUrl(targetUrl);
 				BufferedWriter printWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -77,7 +89,7 @@ public class HTTPSClient {
 
 				// Check for "OK" Status code in first answer line
 				return firstResponseLine.split(" ")[1].equals("200");
-			} catch (Exception e) {
+			} catch (IOException e) {
 				return false;
 			}
 		} catch (MalformedURLException e) {
